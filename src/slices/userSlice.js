@@ -17,10 +17,8 @@ export const createUser = createAsyncThunk("user/createUser", async (user) => {
       `${process.env.REACT_APP_API_URL}api/v1/user/register`,
       user
     );
-
     if (res.status === 201) {
       let token = res.data.token;
-
       let response = await axios.post(
         `${process.env.REACT_APP_API_URL}api/v1/cart/createCart`,
         {},
@@ -30,7 +28,6 @@ export const createUser = createAsyncThunk("user/createUser", async (user) => {
           },
         }
       );
-
       if (response.status === 201) {
         return res.data;
       } else {
@@ -40,10 +37,8 @@ export const createUser = createAsyncThunk("user/createUser", async (user) => {
       throw new Error("Error while registering user");
     }
   } catch (error) {
-    console.error(error);
-    const message =
-      error.response?.data?.message || error.message || "Something went wrong";
-    throw new Error(message);
+    console.log(error)
+    throw new Error(error.response.data.message);
   }
 });
 
@@ -55,12 +50,9 @@ export const loginUser = createAsyncThunk("user/loginUser", async (user) => {
     );
     return res.data;
   } catch (error) {
-    const message =
-      error.response?.data?.message || error.message || "Something went wrong";
-    throw new Error(message);
+    throw new Error(error.response.data.message);
   }
 });
-
 export const fetchAllUsers = createAsyncThunk(
   "user/fetchAllUsers",
   async ({ token }) => {
@@ -75,9 +67,7 @@ export const fetchAllUsers = createAsyncThunk(
       );
       return res.data;
     } catch (error) {
-      const message =
-        error.response?.data?.message || error.message || "Something went wrong";
-      throw new Error(message);
+      throw new Error(error.response.data.message);
     }
   }
 );
@@ -97,9 +87,7 @@ export const updateAdmin = createAsyncThunk(
       );
       return res.data;
     } catch (error) {
-      const message =
-        error.response?.data?.message || error.message || "Something went wrong";
-      throw new Error(message);
+      throw new Error(error.response.data.message);
     }
   }
 );
@@ -118,9 +106,7 @@ export const deleteUser = createAsyncThunk(
       );
       return res.data;
     } catch (error) {
-      const message =
-        error.response?.data?.message || error.message || "Something went wrong";
-      throw new Error(message);
+      throw new Error(error.response.data.message);
     }
   }
 );
@@ -129,7 +115,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    logout: (state) => {
+    logout: (state, action) => {
       localStorage.removeItem("user");
       state.user = null;
       state.loading = false;
