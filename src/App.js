@@ -25,13 +25,17 @@ import UserPanel from "./screens/Dashboard/AdminPanels/UserPanel";
 import Checkout from "./screens/checkout/Checkout";
 import Confirmation from "./screens/checkout/Confirmation";
 import axios from "./axiosInstance";
-
 import { logout } from "./slices/userSlice";
 import WishList from "./screens/WishList";
 import { fetchWishListItems } from "./slices/wishListSlice";
 
+// ✅ NEWLY ADDED ROUTES
+import Phones from "./screens/Phones";
+import Payments from "./screens/Payments";
+import Shipping from "./screens/checkout/Shipping";
 
-
+import ShoppingDetails from "./screens/ShoppingDetails";
+import FAQ from "./screens/FAQ";
 
 function App() {
   const dispatch = useDispatch();
@@ -40,30 +44,30 @@ function App() {
   const { totalQty, cart } = useSelector((state) => state.cartState);
   const { wishList } = useSelector((state) => state.wishLishState);
 
-
   useEffect(() => {
     dispatch(fetchProducts());
-
   }, []);
 
   useEffect(() => {
-    user && axios.get("http://localhost:8080/api/v1/user/checkUser", {
-      headers: {
-        authorization: `Bearer ${user?.token}`
-      }
-    }).then((res) => {
-      return true
-    }).catch(err => {
-      if (err?.response?.status === 401) {
-        dispatch(logout())
-      }
-    })
-  }, [user])
+    user &&
+      axios
+        .get("http://localhost:8080/api/v1/user/checkUser", {
+          headers: {
+            authorization: `Bearer ${user?.token}`,
+          },
+        })
+        .then((res) => true)
+        .catch((err) => {
+          if (err?.response?.status === 401) {
+            dispatch(logout());
+          }
+        });
+  }, [user]);
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0);
     return undefined;
-  }, [pathname])
+  }, [pathname]);
 
   useEffect(() => {
     user && dispatch(fetchCartItems(user?.token));
@@ -72,16 +76,6 @@ function App() {
 
   return (
     <>
-     {/* <button
-        style={{ margin: '20px', padding: '10px', background: 'lightblue' }}
-        onClick={() => {
-          axios.get('/api/v1/products')
-            .then(res => console.log("✅ Products:", res.data))
-            .catch(err => console.log("❌ Still sleeping:", err.message));
-        }}
-      >
-        Test Products API
-      </button> */}
       <CssBaseline />
       <ToastContainer />
       <GlobalStyle />
@@ -93,17 +87,35 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<WishList />} />
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-        <Route path="/register" element={!user ? <Register /> : <Navigate to={"/"} />} />
-        <Route path="/dashboard" element={user?.isAdmin ? <Dashboard /> : <Navigate to={"/login"} />}>
+        <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+        <Route path="/about" element={<About />} />
+
+        {/* ✅ New Routes for Footer Links */}
+        <Route path="/categories/phones" element={<Phones />} />
+        <Route path="/account/payments" element={<Payments />} />
+        <Route path="/account/shipping" element={<Shipping />} />
+        <Route path="/account/shopping" element={<ShoppingDetails />} />
+        <Route path="/faq" element={<FAQ />} />
+
+        {/* ✅ Admin Dashboard Routes */}
+        <Route path="/dashboard" element={user?.isAdmin ? <Dashboard /> : <Navigate to="/login" />}>
           <Route index element={user?.isAdmin ? <ProductPanel /> : <Navigate to="/" />} />
           <Route path="products" element={user?.isAdmin ? <ProductPanel /> : <Navigate to="/" />} />
           <Route path="orders" element={user?.isAdmin ? <OrderPanel /> : <Navigate to="/" />} />
           <Route path="users" element={user?.isAdmin ? <UserPanel /> : <Navigate to="/" />} />
         </Route>
-        <Route path="/about" element={<About />} />
+
         <Route
           path="/checkout"
-          element={!user ? <Navigate to={"/login"} /> : user && cart?.items?.length > 0 ? <Checkout /> : <Navigate to="/products" />}
+          element={
+            !user ? (
+              <Navigate to="/login" />
+            ) : user && cart?.items?.length > 0 ? (
+              <Checkout />
+            ) : (
+              <Navigate to="/products" />
+            )
+          }
         />
         <Route path="/checkout/success" element={<Confirmation />} />
         <Route path="*" element={<PageNotFound />} />
