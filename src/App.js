@@ -24,7 +24,8 @@ import OrderPanel from "./screens/Dashboard/AdminPanels/OrderPanel";
 import UserPanel from "./screens/Dashboard/AdminPanels/UserPanel";
 import Checkout from "./screens/checkout/Checkout";
 import Confirmation from "./screens/checkout/Confirmation";
-import axios from "axios";
+import axios from "./axiosInstance";
+
 import { logout } from "./slices/userSlice";
 import WishList from "./screens/WishList";
 import { fetchWishListItems } from "./slices/wishListSlice";
@@ -71,6 +72,16 @@ function App() {
 
   return (
     <>
+     {/* <button
+        style={{ margin: '20px', padding: '10px', background: 'lightblue' }}
+        onClick={() => {
+          axios.get('/api/v1/products')
+            .then(res => console.log("✅ Products:", res.data))
+            .catch(err => console.log("❌ Still sleeping:", err.message));
+        }}
+      >
+        Test Products API
+      </button> */}
       <CssBaseline />
       <ToastContainer />
       <GlobalStyle />

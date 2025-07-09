@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios from "../axiosInstance"; // in slices folder
+
 
 const calculateQty = (arr) => {
   return arr?.reduce((qty, item) => qty + item.qty, 0);

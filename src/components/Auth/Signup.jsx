@@ -22,7 +22,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
 import { Bounce, toast } from "react-toastify";
-import axios from "axios";
+import axios from "../../axiosInstance";
+
 import { createUser } from "../../slices/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

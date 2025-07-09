@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
-import axios from "axios";
-// import { filterByCategory, filterPrice, searching } from "../utils/utils";
+import axios from "../axiosInstance"; // using custom axios instance
 
-let allProducts = null;
+
+
 const initialState = {
   products: [],
   loading: false,
@@ -13,75 +13,66 @@ const initialState = {
   priceRange: { min: 0, max: 80000 },
 };
 
+// ✅ Get All Products
 export const fetchProducts = createAsyncThunk(
   "newProducts/fetchProducts",
   async () => {
     try {
-      let { data } = await axios(
-        `${process.env.REACT_APP_API_URL}api/v1/products/`
-      );
+      const { data } = await axios.get('/api/v1/products');
       return data;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      throw new Error(error.response?.data?.message || "Failed to fetch products");
     }
   }
 );
 
+// ✅ Delete Product
 export const deleteProduct = createAsyncThunk(
   "newProducts/deleteProduct",
   async ({ token, productId }) => {
     try {
-      let { data } = await axios.delete(
-        `${process.env.REACT_APP_API_URL}api/v1/products/delete/${productId}`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.delete(`/api/v1/products/delete/${productId}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      throw new Error(error.response?.data?.message || "Failed to delete product");
     }
   }
 );
 
+// ✅ Update Product
 export const updateProduct = createAsyncThunk(
   "newProducts/updateProduct",
   async ({ formData, token, productId }) => {
     try {
-      let { data } = await axios.put(
-        `${process.env.REACT_APP_API_URL}api/v1/products/update/${productId}`,
-        formData,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.put(`/api/v1/products/update/${productId}`, formData, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      throw new Error(error.response?.data?.message || "Failed to update product");
     }
   }
 );
 
+// ✅ Add Product
 export const addProduct = createAsyncThunk(
   "newProducts/addProduct",
   async ({ formData, token }) => {
     try {
-      let { data } = await axios.post(
-        `${process.env.REACT_APP_API_URL}api/v1/products/create`,
-        formData,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.post('/api/v1/products/create', formData, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      throw new Error(error.response?.data?.message || "Failed to add product");
     }
   }
 );
@@ -99,99 +90,94 @@ const productSlice = createSlice({
     setPriceRange: (state, action) => {
       state.priceRange = action.payload;
     },
-    filterProducts: (state, action) => {
-      const { searchQuery, selectedCategories, priceRange, products } =
-        current(state);
+    filterProducts: (state) => {
+      const { searchQuery, selectedCategories, priceRange, products } = current(state);
 
       const filteredProducts = products.filter((product) => {
-        // Filter by search query
         if (
           searchQuery &&
           !product.name.toLowerCase().includes(searchQuery.toLowerCase())
         ) {
           return false;
         }
-
-        // Filter by categories
         if (
           selectedCategories.length > 0 &&
           !selectedCategories.includes(product.category)
         ) {
           return false;
         }
-
-        // Filter by price range
-        // const { price } = product;
         if (product.price < priceRange.min || product.price > priceRange.max) {
           return false;
         }
-
         return true;
       });
 
       state.filteredProducts = filteredProducts;
     },
   },
-  extraReducers: {
-    [fetchProducts.pending]: (state) => {
-      state.loading = true;
-    },
-    [fetchProducts.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.products = action.payload;
-      state.filteredProducts = action.payload;
-      //   console.log(state.products)
-    },
-    [fetchProducts.rejected]: (state, action) => {
-      state.loading = false;
-      state.products = null;
-      state.error = action.error.message;
-    },
-    [deleteProduct.pending]: (state) => {
-      state.loading = true;
-    },
-    [deleteProduct.fulfilled]: (state, action) => {
-      state.loading = false;
-      let index = state.products.findIndex(
-        (product) => product._id === action.payload._id
-      );
-      state.products.splice(index, 1);
-      state.filteredProducts.splice(index, 1);
-      allProducts = state.products;
-    },
-    [deleteProduct.rejected]: (state, action) => {
-      state.loading = false;
-      state.error = action.error.message;
-    },
-    [updateProduct.pending]: (state) => {
-      state.loading = true;
-    },
-    [updateProduct.fulfilled]: (state, action) => {
-      state.loading = false;
-      let index = state.products.findIndex(
-        (product) => product._id === action.payload._id
-      );
-      state.products.splice(index, 1, action.payload);
-      state.filteredProducts.splice(index, 1, action.payload);
-      allProducts = state.products;
-    },
-    [updateProduct.rejected]: (state, action) => {
-      state.loading = false;
-      state.error = action.error.message;
-    },
-    [addProduct.pending]: (state) => {
-      state.loading = true;
-    },
-    [addProduct.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.products = [action.payload, ...state.products];
-      state.filteredProducts = [action.payload, ...state.products];
-      allProducts = state.products;
-    },
-    [addProduct.rejected]: (state, action) => {
-      state.loading = false;
-      state.error = action.error.message;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = action.payload;
+        state.filteredProducts = action.payload;
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.products = [];
+        state.error = action.error.message;
+      })
+
+      .addCase(deleteProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.products.findIndex(
+          (product) => product._id === action.payload._id
+        );
+        state.products.splice(index, 1);
+        state.filteredProducts.splice(index, 1);
+       
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      .addCase(updateProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.products.findIndex(
+          (product) => product._id === action.payload._id
+        );
+        state.products.splice(index, 1, action.payload);
+        state.filteredProducts.splice(index, 1, action.payload);
+        
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      .addCase(addProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = [action.payload, ...state.products];
+        state.filteredProducts = [action.payload, ...state.filteredProducts];
+        
+      })
+      .addCase(addProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
@@ -203,7 +189,6 @@ export const {
 } = productSlice.actions;
 
 export default productSlice.reducer;
-
 
 
 // import { createSlice, createAsyncThunk} from "@reduxjs/toolkit";
