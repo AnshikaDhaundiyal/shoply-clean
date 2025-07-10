@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../axiosInstance"; // in slices folder
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "../axiosInstance";
 
-
+// Load user from local storage
 let localUser = localStorage.getItem("user")
   ? JSON.parse(localStorage.getItem("user"))
   : null;
@@ -10,18 +10,19 @@ const initialState = {
   user: localUser,
   loading: false,
   error: false,
+  allUsers: [], // Ensure this exists for fetch/update/delete
 };
 
-export const createUser = createAsyncThunk("user/createUser", async (user) => {
-  try {
-    let res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/v1/user/register`,
-      user
-    );
-    if (res.status === 201) {
-      let token = res.data.token;
-      let response = await axios.post(
-        `${process.env.REACT_APP_API_URL}api/v1/cart/createCart`,
+// ✅ Register User + Create Cart
+export const createUser = createAsyncThunk(
+  "user/createUser",
+  async (user, thunkAPI) => {
+    try {
+      const res = await axios.post(`/user/register`, user);
+      const token = res.data.token;
+
+      await axios.post(
+        `/cart/createCart`,
         {},
         {
           headers: {
@@ -29,173 +30,170 @@ export const createUser = createAsyncThunk("user/createUser", async (user) => {
           },
         }
       );
-      if (response.status === 201) {
-        return res.data;
-      } else {
-        throw new Error("Error while creating cart");
-      }
-    } else {
-      throw new Error("Error while registering user");
-    }
-  } catch (error) {
-    console.log(error)
-    throw new Error(error.response.data.message);
-  }
-});
 
-export const loginUser = createAsyncThunk("user/loginUser", async (user) => {
-  try {
-    let res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/v1/user/login`,
-      user
-    );
-    return res.data;
-  } catch (error) {
-    throw new Error(error.response.data.message);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Registration failed"
+      );
+    }
   }
-});
+);
+
+// ✅ Login User
+export const loginUser = createAsyncThunk(
+  "user/loginUser",
+  async (user, thunkAPI) => {
+    try {
+      const res = await axios.post(`/user/login`, user);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Login failed"
+      );
+    }
+  }
+);
+
+// ✅ Fetch All Users (Admin)
 export const fetchAllUsers = createAsyncThunk(
   "user/fetchAllUsers",
-  async ({ token }) => {
+  async ({ token }, thunkAPI) => {
     try {
-      let res = await axios.get(
-        `${process.env.REACT_APP_API_URL}api/v1/user/allUser`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get(`/user/allUser`, {
+        headers: { authorization: `Bearer ${token}` },
+      });
       return res.data;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Failed to fetch users"
+      );
     }
   }
 );
 
+// ✅ Update Admin Role
 export const updateAdmin = createAsyncThunk(
   "user/updateAdmin",
-  async ({ token, userId }) => {
+  async ({ token, userId }, thunkAPI) => {
     try {
-      let res = await axios.put(
-        `${process.env.REACT_APP_API_URL}api/v1/user/updateAdmin/${userId}`,
+      const res = await axios.put(
+        `/user/updateAdmin/${userId}`,
         {},
         {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
+          headers: { authorization: `Bearer ${token}` },
         }
       );
       return res.data;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Failed to update admin"
+      );
     }
   }
 );
 
+// ✅ Delete User
 export const deleteUser = createAsyncThunk(
   "user/deleteUser",
-  async ({ token, userId }) => {
+  async ({ token, userId }, thunkAPI) => {
     try {
-      let res = await axios.delete(
-        `${process.env.REACT_APP_API_URL}api/v1/user/deleteUser/${userId}`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.delete(`/user/deleteUser/${userId}`, {
+        headers: { authorization: `Bearer ${token}` },
+      });
       return res.data;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || "Failed to delete user"
+      );
     }
   }
 );
 
+// ✅ Slice
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    logout: (state, action) => {
+    logout: (state) => {
       localStorage.removeItem("user");
       state.user = null;
       state.loading = false;
       state.error = false;
     },
   },
-  extraReducers: {
-    [createUser.pending]: (state) => {
-      state.loading = true;
-      state.error = false;
-      state.user = null;
-    },
-    [createUser.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.error = false;
-      state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
-    },
-    [createUser.rejected]: (state, action) => {
-      state.loading = false;
-      state.error = action.error.message;
-      state.user = null;
-    },
-    [loginUser.pending]: (state) => {
-      state.loading = true;
-    },
-    [loginUser.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.error = false;
-      state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
-    },
-    [loginUser.rejected]: (state, action) => {
-      state.error = action.error.message;
-      state.user = null;
-      state.loading = false;
-    },
-    [fetchAllUsers.pending]: (state) => {
-      state.loading = true;
-    },
-    [fetchAllUsers.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.error = false;
-      state.allUsers = action.payload;
-    },
-    [fetchAllUsers.rejected]: (state, action) => {
-      state.error = action.error.message;
-      state.loading = false;
-    },
-    [updateAdmin.pending]: (state) => {
-      state.loading = true;
-    },
-    [updateAdmin.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.error = false;
-      let index = state.allUsers.findIndex(
-        (user) => user._id === action.payload._id
-      );
-      state.allUsers.splice(index, 1, action.payload);
-    },
-    [updateAdmin.rejected]: (state, action) => {
-      state.error = action.error.message;
-      state.loading = false;
-    },
-    [deleteUser.pending]: (state) => {
-      state.loading = true;
-    },
-    [deleteUser.fulfilled]: (state, action) => {
-      state.loading = false;
-      state.error = false;
-      let index = state.allUsers.findIndex(
-        (user) => user._id === action.payload._id
-      );
-      state.allUsers.splice(index, 1);
-    },
-    [deleteUser.rejected]: (state, action) => {
-      state.error = action.error.message;
-      state.loading = false;
-    },
+  extraReducers: (builder) => {
+    builder
+      // Register
+      .addCase(createUser.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+        state.user = null;
+      })
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = false;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+      .addCase(createUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.user = null;
+      })
+
+      // Login
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = false;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.user = null;
+        state.loading = false;
+      })
+
+      // Fetch All Users
+      .addCase(fetchAllUsers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = false;
+        state.allUsers = action.payload;
+      })
+      .addCase(fetchAllUsers.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      // Update Admin
+      .addCase(updateAdmin.fulfilled, (state, action) => {
+        const index = state.allUsers.findIndex(
+          (user) => user._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.allUsers[index] = action.payload;
+        }
+      })
+      .addCase(updateAdmin.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      // Delete User
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.allUsers = state.allUsers.filter(
+          (user) => user._id !== action.payload._id
+        );
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.error = action.payload;
+      });
   },
 });
 
