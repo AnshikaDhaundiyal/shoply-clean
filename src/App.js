@@ -29,13 +29,23 @@ import { logout } from "./slices/userSlice";
 import WishList from "./screens/WishList";
 import { fetchWishListItems } from "./slices/wishListSlice";
 
-// ✅ NEWLY ADDED ROUTES
-import Phones from "./screens/Phones";
-import Payments from "./screens/Payments";
-import Shipping from "./screens/checkout/Shipping";
 
-import ShoppingDetails from "./screens/ShoppingDetails";
+
+// // ✅ NEWLY ADDED ROUTES
+// import Phones from "./screens/Phones";
+// import Payments from "./screens/Payments";
+// import Shipping from "./screens/checkout/Shipping";
+
+// import ShoppingDetails from "./screens/ShoppingDetails";
+// import FAQ from "./screens/FAQ";
+
+import TermsConditions from "./screens/TermsConditions";
+import Phones from "./screens/Phones";
+import Watches from "./screens/Watches";
+import Laptops from "./screens/Laptops";
+import Cameras from "./screens/Cameras";
 import FAQ from "./screens/FAQ";
+import ShoppingDetails from "./screens/ShoppingDetails";
 
 function App() {
   const dispatch = useDispatch();
@@ -81,6 +91,8 @@ function App() {
       <GlobalStyle />
       <Navbar />
       <Routes>
+
+
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/singleproduct/:_id" element={<SingleProduct />} />
@@ -90,12 +102,21 @@ function App() {
         <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
         <Route path="/about" element={<About />} />
 
-        {/* ✅ New Routes for Footer Links */}
+
+<Route path="/terms&conditions" element={<TermsConditions />} />
+<Route path="/categories/phones" element={<Phones />} />
+<Route path="/categories/watches" element={<Watches />} />
+<Route path="/categories/laptops" element={<Laptops />} />
+<Route path="/categories/cameras" element={<Cameras />} />
+<Route path="/faq" element={<FAQ />} />
+<Route path="/account/shopping" element={<ShoppingDetails />} />
+
+        {/* ✅ New Routes for Footer Links
         <Route path="/categories/phones" element={<Phones />} />
         <Route path="/account/payments" element={<Payments />} />
         <Route path="/account/shipping" element={<Shipping />} />
         <Route path="/account/shopping" element={<ShoppingDetails />} />
-        <Route path="/faq" element={<FAQ />} />
+        <Route path="/faq" element={<FAQ />} /> */}
 
         {/* ✅ Admin Dashboard Routes */}
         <Route path="/dashboard" element={user?.isAdmin ? <Dashboard /> : <Navigate to="/login" />}>

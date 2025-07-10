@@ -36,26 +36,44 @@ const Footer = () => {
 
 						<Column>
 							<Heading>Quick Links</Heading>
-							<Link to="/about" style={linkStyle}>About Us</Link>
+							{/* <Link to="/about" style={linkStyle}>About Us</Link>
 							<Link to="/home" style={linkStyle}>Home</Link>
 							<Link to="/cart" style={linkStyle}>Cart</Link>
-							<Link to="/terms&conditions" style={linkStyle}>Terms & Conditions</Link>
+							<Link to="/terms&conditions" style={linkStyle}>Terms & Conditions</Link> */}
+<Link to="/about" style={linkStyle}>About Us</Link>
+<Link to="/" style={linkStyle}>Home</Link>
+<Link to="/cart" style={linkStyle}>Cart</Link>
+{/* Optional - only if you create this file */}
+<Link to="/terms" style={linkStyle}>Terms & Conditions</Link>
+
+						
 						</Column>
 
 						<Column>
-							<Heading>Products</Heading>
+							{/* <Heading>Products</Heading>
 							<Link to="/categories/phones" style={linkStyle}>Phones</Link>
 							<Link to="/categories/watches" style={linkStyle}>Watches</Link>
 							<Link to="/categories/laptops" style={linkStyle}>Laptops</Link>
-							<Link to="/categories/cameras" style={linkStyle}>Cameras</Link>
+							<Link to="/categories/cameras" style={linkStyle}>Cameras</Link> */}
+							<Link to="/products?category=phones" style={linkStyle}>Phones</Link>
+<Link to="/products?category=watches" style={linkStyle}>Watches</Link>
+<Link to="/products?category=laptops" style={linkStyle}>Laptops</Link>
+<Link to="/products?category=cameras" style={linkStyle}>Cameras</Link>
+
 						</Column>
 
 						<Column>
 							<Heading>Help</Heading>
-							<Link to="/account/payments" style={linkStyle}>Payments</Link>
+							{/* <Link to="/account/payments" style={linkStyle}>Payments</Link>
 							<Link to="/account/shipping" style={linkStyle}>Shipping</Link>
 							<Link to="/account/shopping" style={linkStyle}>Shopping Details</Link>
-							<Link to="/faq" style={linkStyle}>FAQ</Link>
+							<Link to="/faq" style={linkStyle}>FAQ</Link> */}
+							<Link to="/payment" style={linkStyle}>Payments</Link>
+<Link to="/shipping" style={linkStyle}>Shipping</Link>
+<Link to="/review" style={linkStyle}>Shopping Details</Link>
+{/* Only if you have FAQ page */}
+<Link to="/faq" style={linkStyle}>FAQ</Link>
+
 						</Column>
 
 						<Column>
