@@ -18,7 +18,9 @@ export const fetchProducts = createAsyncThunk(
   "newProducts/fetchProducts",
   async () => {
     try {
-      const { data } = await axios.get('/api/v1/products');
+      // ✅ Correct — already included in baseURL
+const { data } = await axios.get('/products');
+
       return data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Failed to fetch products");

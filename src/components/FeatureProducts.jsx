@@ -21,6 +21,11 @@ const FeatureProducts = () => {
     error: userError,
   } = useSelector((state) => state.userstate);
 
+  console.log("Redux Products:", products);
+console.log("Loading:", loading);
+console.log("Error:", error);
+
+
   // ✅ Fetch products when component mounts
   useEffect(() => {
     dispatch(fetchProducts());
