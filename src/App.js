@@ -46,7 +46,7 @@ import Laptops from "./screens/Laptops";
 import Cameras from "./screens/Cameras";
 import FAQ from "./screens/FAQ";
 import ShoppingDetails from "./screens/ShoppingDetails";
-import TermsAndConditions from "./screen/TermsAndConditions";
+import TermsAndConditions from "./screens/TermsConditions";
 
 
 
@@ -106,7 +106,7 @@ function App() {
         <Route path="/about" element={<About />} />
 
 
-<Route path="/terms" element={<TermsAndConditions />} />
+<Route path="/terms" element={<TermsConditions />} />
 <Route path="/categories/phones" element={<Phones />} />
 <Route path="/categories/watches" element={<Watches />} />
 <Route path="/categories/laptops" element={<Laptops />} />

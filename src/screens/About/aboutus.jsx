@@ -58,15 +58,15 @@ export default function About() {
                                 md : "none"
                             }
                         }} />
-                        <p style={{ textAlign: "justify", color: "#525252", textAlignLast : "center" }}>Welcome to ShopZone, your ultimate destination for all things tech and fashion.
+                        <p style={{ textAlign: "justify", color: "#525252", textAlignLast : "center" }}>Welcome to ShopLy, your ultimate destination for all things tech and fashion.
                             We bring you a diverse range of products, including watches, phones, cameras, and laptops.
                             With our carefully curated selection, you can find the perfect gadget or stylish accessory to suit your needs.
                         </p>
 
-                        <p style={{ textAlign: "justify", color: "#525252",textAlignLast : "center"}}>At ShopZone, we prioritize quality and customer satisfaction. Our team of experts ensures that every
+                        <p style={{ textAlign: "justify", color: "#525252",textAlignLast : "center"}}>At ShopLy, we prioritize quality and customer satisfaction. Our team of experts ensures that every
                             product we offer meets the highest standards. Whether you're a tech enthusiast or a fashion-forward individual,
                             we have something for everyone. Browse through our categories and discover the latest trends in technology
-                            and style. Shop with confidence at ShopZone and elevate your shopping experience today.
+                            and style. Shop with confidence at ShopLy and elevate your shopping experience today.
                         </p>
                     </Grid>
                     <Grid item xs={12} md={7} lg={6} sx={{

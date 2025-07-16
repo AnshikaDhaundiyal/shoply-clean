@@ -197,7 +197,7 @@ function Navbar(props) {
                 // textDecoration: 'none',
               }}
             >
-              ShopZone
+              ShopLy
             </Typography>
             {/* </Link> */}
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
