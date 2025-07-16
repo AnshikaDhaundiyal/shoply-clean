@@ -22,14 +22,14 @@ import About from "./screens/About/aboutus";
 import ProductPanel from "./screens/Dashboard/AdminPanels/ProductPanel";
 import OrderPanel from "./screens/Dashboard/AdminPanels/OrderPanel";
 import UserPanel from "./screens/Dashboard/AdminPanels/UserPanel";
-import Checkout from "./screens/checkout/Checkout";
-import Confirmation from "./screens/checkout/Confirmation";
+import Checkout from "./screens/Checkout";
+import Confirmation from "./screens/Confirmation";
 import axios from "./axiosInstance";
 import { logout } from "./slices/userSlice";
 import WishList from "./screens/WishList";
 import { fetchWishListItems } from "./slices/wishListSlice";
-
-
+import Shipping from "./screens/Shipping";
+import AddressForm from "./screens/AddressForm";
 
 // // ✅ NEWLY ADDED ROUTES
 // import Phones from "./screens/Phones";
@@ -110,7 +110,8 @@ function App() {
 <Route path="/categories/cameras" element={<Cameras />} />
 <Route path="/faq" element={<FAQ />} />
 <Route path="/account/shopping" element={<ShoppingDetails />} />
-
+<Route path="/shipping" element={<Shipping />} />
+<Route path="/checkout/addressform" element={< AddressForm />} />
         {/* ✅ New Routes for Footer Links
         <Route path="/categories/phones" element={<Phones />} />
         <Route path="/account/payments" element={<Payments />} />

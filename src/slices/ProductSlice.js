@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import axios from "../axiosInstance"; // using custom axios instance
 
-
-
 const initialState = {
   products: [],
   loading: false,
@@ -13,22 +11,37 @@ const initialState = {
   priceRange: { min: 0, max: 80000 },
 };
 
-// ✅ Get All Products
+// ✅ GET All Products with Retry Logic
 export const fetchProducts = createAsyncThunk(
   "newProducts/fetchProducts",
   async () => {
-    try {
-      // ✅ Correct — already included in baseURL
-const { data } = await axios.get('/products');
+    const retryRequest = async (url, retries = 1, delay = 5000) => {
+      try {
+        const res = await axios.get(url);
+        return res;
+      } catch (err) {
+        if (retries > 0) {
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return retryRequest(url, retries - 1, delay);
+        } else {
+          throw err;
+        }
+      }
+    };
 
+    try {
+      const { data } = await retryRequest("/products");
       return data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to fetch products");
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to fetch products (maybe server is waking up)"
+      );
     }
   }
 );
 
-// ✅ Delete Product
+// ✅ DELETE Product
 export const deleteProduct = createAsyncThunk(
   "newProducts/deleteProduct",
   async ({ token, productId }) => {
@@ -45,16 +58,20 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
-// ✅ Update Product
+// ✅ UPDATE Product
 export const updateProduct = createAsyncThunk(
   "newProducts/updateProduct",
   async ({ formData, token, productId }) => {
     try {
-      const { data } = await axios.put(`/api/v1/products/update/${productId}`, formData, {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
+      const { data } = await axios.put(
+        `/api/v1/products/update/${productId}`,
+        formData,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
       return data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Failed to update product");
@@ -62,12 +79,12 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
-// ✅ Add Product
+// ✅ ADD Product
 export const addProduct = createAsyncThunk(
   "newProducts/addProduct",
   async ({ formData, token }) => {
     try {
-      const { data } = await axios.post('/api/v1/products/create', formData, {
+      const { data } = await axios.post("/api/v1/products/create", formData, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -121,15 +138,18 @@ const productSlice = createSlice({
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
+        state.error = false;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload;
         state.filteredProducts = action.payload;
+        state.error = false;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.products = [];
+        state.filteredProducts = [];
         state.error = action.error.message;
       })
 
@@ -143,7 +163,6 @@ const productSlice = createSlice({
         );
         state.products.splice(index, 1);
         state.filteredProducts.splice(index, 1);
-       
       })
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
@@ -160,7 +179,6 @@ const productSlice = createSlice({
         );
         state.products.splice(index, 1, action.payload);
         state.filteredProducts.splice(index, 1, action.payload);
-        
       })
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
@@ -174,7 +192,6 @@ const productSlice = createSlice({
         state.loading = false;
         state.products = [action.payload, ...state.products];
         state.filteredProducts = [action.payload, ...state.filteredProducts];
-        
       })
       .addCase(addProduct.rejected, (state, action) => {
         state.loading = false;
