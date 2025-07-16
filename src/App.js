@@ -46,6 +46,9 @@ import Laptops from "./screens/Laptops";
 import Cameras from "./screens/Cameras";
 import FAQ from "./screens/FAQ";
 import ShoppingDetails from "./screens/ShoppingDetails";
+import TermsAndConditions from "./screen/TermsAndConditions";
+
+
 
 function App() {
   const dispatch = useDispatch();
@@ -103,7 +106,7 @@ function App() {
         <Route path="/about" element={<About />} />
 
 
-<Route path="/terms&conditions" element={<TermsConditions />} />
+<Route path="/terms" element={<TermsAndConditions />} />
 <Route path="/categories/phones" element={<Phones />} />
 <Route path="/categories/watches" element={<Watches />} />
 <Route path="/categories/laptops" element={<Laptops />} />
