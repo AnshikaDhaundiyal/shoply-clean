@@ -31,7 +31,7 @@ const Footer = () => {
 				<Container>
 					<Row>
 						<Column style={{ display: "inline-block" }}>
-							<h1 style={{ color: "#fff", fontSize: "34px", fontWeight: "bold" }}>ShopZone</h1>
+							<h1 style={{ color: "#fff", fontSize: "34px", fontWeight: "bold" }}>ShopLy</h1>
 						</Column>
 
 						<Column>
