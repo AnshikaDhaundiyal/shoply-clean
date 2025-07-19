@@ -11,7 +11,7 @@ const HeroSection = () => {
       <div className="
       hero-section-data">
         <p className="intro-data">Welcome to </p>
-        <h1 > ShopZone </h1>
+        <h1 > ShopLy </h1>
         <p>
         Discover endless possibilities. Shop the latest trends. Find your perfect style.
          Experience seamless shopping. 
