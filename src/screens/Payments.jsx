@@ -3,7 +3,62 @@ import { FaCcVisa, FaCcMastercard, FaGooglePay, FaPhoneAlt } from "react-icons/f
 import { SiPaytm, SiNetlify } from "react-icons/si";
 import { MdOutlineSecurity } from "react-icons/md";
 import { toast } from "react-toastify";
+import axios from "axios";
 
+// Load Razorpay script dynamically
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+// Trigger payment popup
+const makePayment = async () => {
+  const res = await loadRazorpayScript();
+  if (!res) {
+    toast.error("Razorpay SDK failed to load. Please check your connection.");
+    return;
+  }
+
+  try {
+    const result = await axios.post("http://localhost:5000/api/razorpay/create-order", {
+      amount: 500, // ₹5.00 for test
+    });
+
+    const { amount, id: order_id, currency } = result.data;
+
+    const options = {
+      key: "rzp_test_YourKeyHere", // 🔑 Replace with your Razorpay Test Key
+      amount,
+      currency,
+      name: "ShopLy",
+      description: "Test Transaction",
+      order_id,
+      handler: function (response) {
+        toast.success("✅ Payment Successful!");
+        console.log("Razorpay Response:", response);
+      },
+      prefill: {
+        name: "Anshika",
+        email: "anshika@example.com",
+        contact: "9999999999",
+      },
+      theme: { color: "#6366f1" },
+    };
+
+    const razor = new window.Razorpay(options);
+    razor.open();
+  } catch (error) {
+    console.error("Payment Error:", error);
+    toast.error("Payment failed. Please try again.");
+  }
+};
+
+// Dummy payment options for UI
 const paymentMethods = [
   {
     name: "Visa",
@@ -55,7 +110,16 @@ const Payment = () => {
         ))}
       </div>
 
-      <div className="bg-gray-50 border rounded-lg p-6">
+      <div className="text-center mt-8">
+        <button
+          onClick={makePayment}
+          className="bg-indigo-600 text-white px-6 py-2 rounded shadow hover:bg-indigo-700"
+        >
+          Pay ₹5 with Razorpay
+        </button>
+      </div>
+
+      <div className="bg-gray-50 border rounded-lg p-6 mt-12">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">🔒 Payment Security</h2>
         <p className="text-gray-600 mb-2">
           All transactions are protected by <strong>SSL encryption</strong>.
