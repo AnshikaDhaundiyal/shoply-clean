@@ -26,7 +26,7 @@ function Copyright() {
       }}
     >
       {"Copyright © "}
-      2023 Yuvi
+       2025 ShopLy. Designed & Developed by Anshika.
     </Typography>
   );
 }
