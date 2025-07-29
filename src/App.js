@@ -35,7 +35,9 @@ import Laptops from "./screens/Laptops";
 import Cameras from "./screens/Cameras";
 
 // Checkout & Confirmation
-import Checkout from "./screens/Checkout/Checkout";
+import Checkout from './screens/CheckoutTemp/Checkout'; // ✅ Use this exact case
+
+
 import AddressForm from "./screens/AddressForm";
 import Confirmation from "./screens/Confirmation";
 
