@@ -42,7 +42,8 @@ const productSlice = createSlice({
         },
         [fetchSingleProduct.fulfilled] : (state, action) => {
             state.loading = false;
-            state.product = action.payload;
+            state.product = action.payload.product;
+
             state.error = false
         },
         [fetchSingleProduct.rejected] : (state, action) => {
@@ -55,7 +56,8 @@ const productSlice = createSlice({
         },
         [createReview.fulfilled] : (state, action) => {
             state.loading = false;
-            state.product = action.payload;
+            state.product = action.payload.product;
+
             state.error = false
         },
         [createReview.rejected] : (state, action) => {

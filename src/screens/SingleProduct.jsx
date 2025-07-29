@@ -59,21 +59,22 @@ const SingleProduct = () => {
 
   /* ------------------------- Add to Cart Handler *****************************/
   const handleAddToCart = () => {
-    if (user) {
-      let cartItem = {
-        productId: product?._id,
-        productName: product?.name,
-        productImage: product?.image,
-        countInStock: parseInt(product?.countInStock),
-        price: parseInt(product?.price),
-        qty: parseInt(qty),
-      };
+  if (user) {
+    const cartItem = {
+      productId: product?._id,
+      productName: product?.name,
+      productImage: product?.image,
+      countInStock: parseInt(product?.countInStock),
+      price: parseInt(product?.price),
+      qty: parseInt(qty),
+    };
 
-      dispatch(addToCart({ token: user.token, product: cartItem }));
-    } else {
-      navigate("/login");
-    }
-  };
+    dispatch(addToCart({ token: user.token, product: cartItem }));
+  } else {
+    navigate("/login");
+  }
+};
+
   const handleAddToWishlist = () => {
     if (user) {
       let wishlistItem = {
